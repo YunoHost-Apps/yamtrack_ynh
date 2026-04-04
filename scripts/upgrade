@@ -24,7 +24,7 @@ ynh_app_setting_set_default --key=redis_db --value="$(ynh_redis_get_free_db)"
 #=================================================
 ynh_script_progression "Upgrading source files..."
 
-ynh_setup_source --dest_dir="$install_dir" --full_replace --keep=".env venv"
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep=".env venv certs"
 
 chown -R "$app:www-data" "$install_dir"
 
@@ -35,16 +35,24 @@ ynh_script_progression "Installing Python dependencies..."
 
 pushd "$install_dir"
     python3 -m venv venv
-    chown -R "$app:" "$install_dir"
+    chown -R "$app:www-data" "$install_dir"
     ynh_hide_warnings ynh_exec_as_app "$install_dir/venv/bin/pip3" install --upgrade pip setuptools wheel
     ynh_hide_warnings ynh_exec_as_app "$install_dir/venv/bin/pip3" install -r "$install_dir/requirements.txt"
 popd
+
+#=================================================
+# CONFIGURE OIDC VIA DEX (IF AVAILABLE)
+#=================================================
+ynh_script_progression "Configuring authentication..."
+
+yamtrack_register_dex
 
 #=================================================
 # UPDATE CONFIGURATION
 #=================================================
 ynh_script_progression "Updating $app's configuration..."
 
+yamtrack_setup_certs
 yamtrack_setup_env
 
 #=================================================

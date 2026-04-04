@@ -29,6 +29,11 @@ ram.build = "300M"
 ram.runtime = "200M"
 
 [install]
+    [install.sso_info]
+    type = "alert"
+    ask.en = "For SSO integration, install Dex (https://apps.yunohost.org/app/dex) before Yamtrack. Without Dex, Yamtrack will use its own local authentication. You can activate SSO later by running: sudo yunohost app upgrade yamtrack"
+    ask.fr = "Pour l'intégration SSO, installez Dex (https://apps.yunohost.org/app/dex) avant Yamtrack. Sans Dex, Yamtrack utilisera son propre système d'authentification locale. Vous pouvez activer le SSO plus tard en lançant : sudo yunohost app upgrade yamtrack"
+
     [install.domain]
     type = "domain"
 

@@ -6,6 +6,18 @@
 
 timezone=$(timedatectl show --value --property=Timezone)
 
+# Build a CA certificate bundle that includes the system CAs
+# plus the YunoHost self-signed CA (needed for OIDC/Dex on self-signed domains)
+yamtrack_setup_certs() {
+    mkdir -p "$install_dir/certs"
+    cp /etc/ssl/certs/ca-certificates.crt "$install_dir/certs/ca-bundle.crt"
+    # Append YunoHost CA if it exists (self-signed cert setups)
+    if [[ -f "/etc/yunohost/certs/$domain/ca.pem" ]]; then
+        cat "/etc/yunohost/certs/$domain/ca.pem" >> "$install_dir/certs/ca-bundle.crt" 2>/dev/null || true
+    fi
+    chown -R "$app:$app" "$install_dir/certs"
+}
+
 # Write the .env config file and append OIDC + BASE_URL settings
 # This avoids issues with ynh_config_add sed substitution on JSON values
 yamtrack_setup_env() {
@@ -18,6 +30,14 @@ yamtrack_setup_env() {
         base_url="$path"
     fi
     echo "BASE_URL=$base_url" >> "$install_dir/.env"
+
+    # Registration: allow when OIDC is active (SSOwat + Dex/LDAP protect access),
+    # disable when using local auth only
+    if [[ "$socialaccount_only" == "True" ]]; then
+        echo "REGISTRATION=True" >> "$install_dir/.env"
+    else
+        echo "REGISTRATION=False" >> "$install_dir/.env"
+    fi
 
     # Append OIDC/SSO settings (values from app settings, written directly to avoid sed issues with JSON)
     echo "SOCIAL_PROVIDERS=$social_providers" >> "$install_dir/.env"
@@ -35,9 +55,9 @@ yamtrack_register_dex() {
     local dex_path
     local dex_install_dir
 
-    dex_domain=$(yunohost app setting dex domain 2>/dev/null)
-    dex_path=$(yunohost app setting dex path 2>/dev/null)
-    dex_install_dir=$(yunohost app setting dex install_dir 2>/dev/null)
+    dex_domain=$(yunohost app setting dex domain 2>/dev/null || true)
+    dex_path=$(yunohost app setting dex path 2>/dev/null || true)
+    dex_install_dir=$(yunohost app setting dex install_dir 2>/dev/null || true)
 
     if [[ -z "$dex_domain" ]]; then
         # Dex not installed, use local auth
