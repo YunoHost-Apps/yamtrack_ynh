@@ -51,15 +51,35 @@ yamtrack_setup_env() {
     chown "$app:$app" "$install_dir/.env"
 }
 
-# Register Yamtrack as an OIDC client in Dex (if installed)
+# Register Yamtrack as an OIDC client in Dex (if installed and SSO enabled)
 yamtrack_register_dex() {
+    local enable_sso
+    enable_sso=$(ynh_app_setting_get --key=enable_sso)
+
+    # If SSO is disabled by user, use local auth
+    if [[ "${enable_sso}" == "0" ]]; then
+        social_providers=""
+        socialaccount_providers="{}"
+        socialaccount_only="False"
+        redirect_login_to_sso="False"
+        ynh_app_setting_set --key=social_providers --value="$social_providers"
+        ynh_app_setting_set --key=socialaccount_providers --value="$socialaccount_providers"
+        ynh_app_setting_set --key=socialaccount_only --value="$socialaccount_only"
+        ynh_app_setting_set --key=redirect_login_to_sso --value="$redirect_login_to_sso"
+        return
+    fi
+
     local dex_domain
     local dex_path
     local dex_install_dir
 
-    dex_domain=$(yunohost app setting dex domain 2>/dev/null || true)
-    dex_path=$(yunohost app setting dex path 2>/dev/null || true)
-    dex_install_dir=$(yunohost app setting dex install_dir 2>/dev/null || true)
+    # Read Dex app settings (temporarily switch app context)
+    local saved_app="$app"
+    app="dex"
+    dex_domain=$(ynh_app_setting_get --key=domain 2>/dev/null || true)
+    dex_path=$(ynh_app_setting_get --key=path 2>/dev/null || true)
+    dex_install_dir=$(ynh_app_setting_get --key=install_dir 2>/dev/null || true)
+    app="$saved_app"
 
     if [[ -z "$dex_domain" ]]; then
         # Dex not installed, use local auth

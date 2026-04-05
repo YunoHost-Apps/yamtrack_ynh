@@ -13,7 +13,6 @@ maintainers = []
 
 [upstream]
 license = "AGPL-3.0-or-later"
-website = "https://github.com/FuzzyGrim/Yamtrack"
 demo = "https://yamtrack.fuzzygrim.com"
 code = "https://github.com/FuzzyGrim/Yamtrack"
 
@@ -29,11 +28,6 @@ ram.build = "300M"
 ram.runtime = "200M"
 
 [install]
-    [install.sso_info]
-    type = "alert"
-    ask.en = "For SSO integration, install Dex (https://apps.yunohost.org/app/dex) before Yamtrack. Without Dex, Yamtrack will use its own local authentication. You can activate SSO later by running: sudo yunohost app upgrade yamtrack"
-    ask.fr = "Pour l'intégration SSO, installez Dex (https://apps.yunohost.org/app/dex) avant Yamtrack. Sans Dex, Yamtrack utilisera son propre système d'authentification locale. Vous pouvez activer le SSO plus tard en lançant : sudo yunohost app upgrade yamtrack"
-
     [install.domain]
     type = "domain"
 
@@ -47,6 +41,14 @@ ram.runtime = "200M"
 
     [install.admin]
     type = "user"
+
+    [install.enable_sso]
+    type = "boolean"
+    default = true
+    ask.en = "Enable SSO authentication via Dex (OIDC)?"
+    ask.fr = "Activer l'authentification SSO via Dex (OIDC) ?"
+    help.en = "If enabled and Dex is installed, users will authenticate via YunoHost SSO. Otherwise, Yamtrack uses its own local authentication. Dex must be installed separately: https://apps.yunohost.org/app/dex"
+    help.fr = "Si activé et que Dex est installé, les utilisateurs s'authentifieront via le SSO YunoHost. Sinon, Yamtrack utilisera son propre système d'authentification locale. Dex doit être installé séparément : https://apps.yunohost.org/app/dex"
 
 [resources]
     [resources.sources.main]

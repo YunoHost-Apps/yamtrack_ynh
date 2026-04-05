@@ -18,6 +18,7 @@ ynh_systemctl --service="$app-celery-beat" --action="stop" --log_path="/var/log/
 ynh_script_progression "Ensuring downward compatibility..."
 
 ynh_app_setting_set_default --key=redis_db --value="$(ynh_redis_get_free_db)"
+ynh_app_setting_set_default --key=enable_sso --value="1"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE

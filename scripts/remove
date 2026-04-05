@@ -48,7 +48,10 @@ ynh_redis_remove_db "$redis_db"
 # REMOVE DEX OIDC CLIENT (IF CONFIGURED)
 #=================================================
 
-dex_install_dir=$(yunohost app setting dex install_dir 2>/dev/null)
+saved_app="$app"
+app="dex"
+dex_install_dir=$(ynh_app_setting_get --key=install_dir 2>/dev/null || true)
+app="$saved_app"
 if [[ -n "$dex_install_dir" ]] && [[ -f "$dex_install_dir/config.yaml.d/$app" ]]; then
     rm -f "$dex_install_dir/config.yaml.d/$app"
     # Regenerate Dex config and restart
