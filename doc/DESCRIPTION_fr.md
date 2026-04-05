@@ -1,16 +1,16 @@
-Yamtrack est un outil auto-heberge de suivi de medias qui permet de suivre films, series, anime, manga, jeux video, livres, comics et jeux de societe.
+Yamtrack est un outil auto-hébergé de suivi de médias qui permet de suivre films, séries, anime, manga, jeux vidéo, livres, comics et jeux de société.
 
-### Fonctionnalites
+### Fonctionnalités
 
-- Suivi individuel des saisons et episodes de series
+- Suivi individuel des saisons et épisodes de séries
 - Enregistrement des scores, statuts, progression, nombre de revisionnages et dates
 - Vue calendrier avec abonnement iCalendar (.ics)
-- Systeme de notifications via Apprise (Discord, Telegram, Slack, email...)
-- Comptes multi-utilisateurs avec suivi personnalise
-- Creation d'entrees personnalisees pour les medias de niche
+- Système de notifications via Apprise (Discord, Telegram, Slack, email...)
+- Comptes multi-utilisateurs avec suivi personnalisé
+- Création d'entrées personnalisées pour les médias de niche
 - Import depuis Trakt, Simkl, MyAnimeList, AniList, Kitsu
-- Integrations avec Jellyfin, Plex et Emby pour le suivi automatique
+- Intégrations avec Jellyfin, Plex et Emby pour le suivi automatique
 
-### Integration SSO
+### Intégration SSO
 
-Si [Dex](https://github.com/YunoHost-Apps/dex_ynh) est installe sur votre instance YunoHost, Yamtrack sera automatiquement configure pour utiliser l'authentification unique OIDC. Les utilisateurs YunoHost pourront se connecter sans creer de compte separe.
+Si [Dex](https://github.com/YunoHost-Apps/dex_ynh) est installé sur votre instance YunoHost, Yamtrack sera automatiquement configuré pour utiliser l'authentification unique OIDC. Les utilisateurs YunoHost pourront se connecter sans créer de compte séparé.

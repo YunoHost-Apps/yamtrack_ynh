@@ -3,7 +3,7 @@
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
-ynh_print_info "Declaring files to be backed up..."
+ynh_script_progression "Declaring files to be backed up..."
 
 #=================================================
 # BACKUP THE APP MAIN DIR
@@ -40,7 +40,7 @@ ynh_backup "/etc/systemd/system/$app-celery-beat.service"
 #=================================================
 # BACKUP THE POSTGRESQL DATABASE
 #=================================================
-ynh_print_info "Backing up the PostgreSQL database..."
+ynh_script_progression "Backing up the PostgreSQL database..."
 
 ynh_psql_dump_db > db.sql
 
@@ -48,4 +48,4 @@ ynh_psql_dump_db > db.sql
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Backup script completed for $app. (YunoHost will then actually copy those files to the archive)."
+ynh_script_progression "Backup script completed for $app. (YunoHost will then actually copy those files to the archive)."

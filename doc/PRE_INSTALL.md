@@ -5,17 +5,3 @@ For SSO integration with YunoHost, **install [Dex](https://apps.yunohost.org/app
 Dex acts as an OIDC (OpenID Connect) provider backed by your YunoHost LDAP. When Dex is detected and SSO is enabled, your YunoHost users can log in to Yamtrack without creating a separate account.
 
 If SSO is disabled or Dex is not installed, Yamtrack will work with its own local authentication system (username/password).
-
-### Enabling or disabling SSO later
-
-You can change the SSO setting at any time:
-
-```bash
-# Enable SSO
-sudo yunohost app setting yamtrack enable_sso -v 1
-sudo yunohost app upgrade yamtrack
-
-# Disable SSO
-sudo yunohost app setting yamtrack enable_sso -v 0
-sudo yunohost app upgrade yamtrack
-```

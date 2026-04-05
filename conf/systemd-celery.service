@@ -22,14 +22,24 @@ StopWaitSecs=60
 # Sandboxing
 NoNewPrivileges=yes
 PrivateDevices=yes
-RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-RestrictNamespaces=yes
-RestrictRealtime=yes
-DevicePolicy=closed
+PrivateTmp=yes
+ProtectHome=yes
 ProtectSystem=full
 ProtectControlGroups=yes
 ProtectKernelModules=yes
 ProtectKernelTunables=yes
+ProtectHostname=yes
+ProtectClock=yes
+ProtectKernelLogs=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+DevicePolicy=closed
+SystemCallArchitectures=native
+RemoveIPC=yes
+UMask=0027
 
 [Install]
 WantedBy=multi-user.target

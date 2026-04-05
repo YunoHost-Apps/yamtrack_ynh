@@ -9,7 +9,7 @@ description.fr = "Suivi de médias auto-hébergé pour films, séries, anime, ma
 
 version = "0.25.0~ynh1"
 
-maintainers = []
+maintainers = ["gmanaud"]
 
 [upstream]
 license = "AGPL-3.0-or-later"
