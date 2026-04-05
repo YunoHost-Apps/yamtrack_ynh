@@ -69,8 +69,8 @@ admin_password=$(ynh_string_random --length=24)
 ynh_app_setting_set --key=admin_password --value="$admin_password"
 
 pushd "$install_dir/src"
-    DJANGO_SUPERUSER_PASSWORD="$admin_password" \
-        ynh_exec_as_app "$install_dir/venv/bin/python" manage.py createsuperuser \
+    ynh_exec_as_app env DJANGO_SUPERUSER_PASSWORD="$admin_password" \
+        "$install_dir/venv/bin/python" manage.py createsuperuser \
         --noinput --username "$admin" --email "$admin_email" 2>/dev/null || true
 popd
 

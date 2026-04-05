@@ -20,9 +20,8 @@ During installation, an admin account is created with the YunoHost admin usernam
 sudo yunohost app setting yamtrack admin_password
 ```
 
-To change it:
+To change it (requires root):
 
 ```bash
-cd /var/www/yamtrack/src
-sudo -u yamtrack /var/www/yamtrack/venv/bin/python manage.py changepassword <username>
+sudo -u yamtrack bash -c "cd /var/www/yamtrack/src && /var/www/yamtrack/venv/bin/python manage.py changepassword <username>"
 ```
