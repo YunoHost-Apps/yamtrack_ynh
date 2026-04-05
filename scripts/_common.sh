@@ -11,10 +11,12 @@ timezone=$(timedatectl show --value --property=Timezone)
 yamtrack_setup_certs() {
     mkdir -p "$install_dir/certs"
     cp /etc/ssl/certs/ca-certificates.crt "$install_dir/certs/ca-bundle.crt"
-    # Append YunoHost CA if it exists (self-signed cert setups)
-    if [[ -f "/etc/yunohost/certs/$domain/ca.pem" ]]; then
-        cat "/etc/yunohost/certs/$domain/ca.pem" >> "$install_dir/certs/ca-bundle.crt" 2>/dev/null || true
-    fi
+    # Extract the CA cert from the domain's TLS chain (handles self-signed setups
+    # where the ca.pem symlink may not match the actual issuing CA)
+    openssl s_client -connect "$domain:443" -servername "$domain" -showcerts \
+        < /dev/null 2>/dev/null \
+        | awk '/BEGIN CERTIFICATE/{n++} n==2' \
+        >> "$install_dir/certs/ca-bundle.crt" 2>/dev/null || true
     chown -R "$app:$app" "$install_dir/certs"
 }
 
