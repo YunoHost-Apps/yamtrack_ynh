@@ -3,6 +3,8 @@
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
+#phony change
+
 ynh_print_info "Declaring files to be backed up..."
 
 #=================================================
