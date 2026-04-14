@@ -4,8 +4,8 @@ packaging_format = 2
 
 id = "yamtrack"
 name = "Yamtrack"
-description.en = "Self-hosted media tracker for movies, TV shows, anime, manga, games, books and more"
-description.fr = "Suivi de médias auto-hébergé pour films, séries, anime, manga, jeux, livres et plus"
+description.en = "Media tracker for movies, TV shows, anime, manga, games, books and more"
+description.fr = "Suivi de médias pour films, séries, anime, manga, jeux, livres et plus"
 
 version = "0.25.0~ynh1"
 
@@ -17,12 +17,14 @@ demo = "https://yamtrack.fuzzygrim.com"
 code = "https://github.com/FuzzyGrim/Yamtrack"
 
 [integration]
-yunohost = ">= 12"
+yunohost = ">= 12.1.39"
 helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
+
 ldap = false
 sso = true
+
 disk = "100M"
 ram.build = "300M"
 ram.runtime = "200M"
