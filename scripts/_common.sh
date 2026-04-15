@@ -49,6 +49,10 @@ yamtrack_setup_env() {
 
     chmod 400 "$install_dir/.env"
     chown "$app:$app" "$install_dir/.env"
+
+    # Update checksum to include the appended lines, so YunoHost
+    # doesn't warn about "manually modified" file on next upgrade/restore
+    ynh_store_file_checksum "$install_dir/.env"
 }
 
 # Register Yamtrack as an OIDC client in Dex (if installed and SSO enabled)
