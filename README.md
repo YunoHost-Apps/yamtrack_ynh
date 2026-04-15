@@ -8,7 +8,7 @@ It shall NOT be edited by hand.
   Yamtrack, packaged for YunoHost
 </h1>
 
-Self-hosted media tracker for movies, TV shows, anime, manga, games, books and more
+Media tracker for movies, TV shows, anime, manga, games, books and more
 
 [![App Demo](https://img.shields.io/badge/App_Demo-blue?style=for-the-badge)](https://yamtrack.fuzzygrim.com)
 [![Version: 0.25.2~ynh1](https://img.shields.io/badge/Version-0.25.2~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/yamtrack/)
