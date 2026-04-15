@@ -7,7 +7,7 @@ name = "Yamtrack"
 description.en = "Self-hosted media tracker for movies, TV shows, anime, manga, games, books and more"
 description.fr = "Suivi de médias auto-hébergé pour films, séries, anime, manga, jeux, livres et plus"
 
-version = "0.25.0~ynh1"
+version = "0.25.2~ynh1"
 
 maintainers = ["gmanaud"]
 
@@ -52,8 +52,8 @@ ram.runtime = "200M"
 
 [resources]
     [resources.sources.main]
-    url = "https://github.com/FuzzyGrim/Yamtrack/archive/refs/tags/v0.25.0.tar.gz"
-    sha256 = "aaf6b5ce228560216f1c77b765766aa2adbf83d6baaf62c8e30259cb2654a579"
+    url = "https://github.com/FuzzyGrim/Yamtrack/archive/refs/tags/v0.25.2.tar.gz"
+    sha256 = "ef434ebe5fcb6fc5edd015aeb438619674c3864147fac0e132ea14af1334b133"
     autoupdate.strategy = "latest_github_release"
 
     [resources.system_user]
