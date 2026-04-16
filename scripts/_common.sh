@@ -20,39 +20,62 @@ yamtrack_setup_certs() {
     chown -R "$app:$app" "$install_dir/certs"
 }
 
+# Variables managed by this package (regenerated on every upgrade)
+# Any other variable found in .env will be preserved across upgrades
+YAMTRACK_MANAGED_ENV_VARS='SECRET|DEBUG|ALLOWED_HOSTS|CSRF|URLS|DB_HOST|DB_PORT|DB_NAME|DB_USER|DB_PASSWORD|REDIS_URL|TZ|ACCOUNT_LOGOUT_REDIRECT_URL|REQUESTS_CA_BUNDLE|BASE_URL|REGISTRATION|SOCIAL_PROVIDERS|SOCIALACCOUNT_PROVIDERS|SOCIALACCOUNT_ONLY|REDIRECT_LOGIN_TO_SSO'
+
 # Write the .env config file and append OIDC + BASE_URL settings
 # This avoids issues with ynh_config_add sed substitution on JSON values
 yamtrack_setup_env() {
+    local env_file="$install_dir/.env"
+    local user_vars=""
+
+    # Preserve any user-added env vars (e.g. TRAKT_API, SIMKL_ID, ANILIST_ID,
+    # STEAM_API_KEY) before the .env is regenerated from the template.
+    # Keep only lines that set a variable NOT managed by this package.
+    if [[ -f "$env_file" ]]; then
+        user_vars=$(grep -E '^[[:space:]]*#?[[:space:]]*[A-Z_][A-Z0-9_]*=' "$env_file" \
+            | grep -vE "^[[:space:]]*#?[[:space:]]*(${YAMTRACK_MANAGED_ENV_VARS})=" \
+            || true)
+    fi
+
     # Deploy the base .env template
-    ynh_config_add --template=".env" --destination="$install_dir/.env"
+    ynh_config_add --template=".env" --destination="$env_file"
 
     # Handle BASE_URL: empty if root path, otherwise the subpath
     local base_url=""
     if [[ "$path" != "/" ]]; then
         base_url="$path"
     fi
-    echo "BASE_URL=$base_url" >> "$install_dir/.env"
+    echo "BASE_URL=$base_url" >> "$env_file"
 
     # Registration: allow when OIDC is active (SSOwat + Dex/LDAP protect access),
     # disable when using local auth only
     if [[ "$socialaccount_only" == "True" ]]; then
-        echo "REGISTRATION=True" >> "$install_dir/.env"
+        echo "REGISTRATION=True" >> "$env_file"
     else
-        echo "REGISTRATION=False" >> "$install_dir/.env"
+        echo "REGISTRATION=False" >> "$env_file"
     fi
 
     # Append OIDC/SSO settings (values from app settings, written directly to avoid sed issues with JSON)
-    echo "SOCIAL_PROVIDERS=$social_providers" >> "$install_dir/.env"
-    echo "SOCIALACCOUNT_PROVIDERS=$socialaccount_providers" >> "$install_dir/.env"
-    echo "SOCIALACCOUNT_ONLY=$socialaccount_only" >> "$install_dir/.env"
-    echo "REDIRECT_LOGIN_TO_SSO=$redirect_login_to_sso" >> "$install_dir/.env"
+    echo "SOCIAL_PROVIDERS=$social_providers" >> "$env_file"
+    echo "SOCIALACCOUNT_PROVIDERS=$socialaccount_providers" >> "$env_file"
+    echo "SOCIALACCOUNT_ONLY=$socialaccount_only" >> "$env_file"
+    echo "REDIRECT_LOGIN_TO_SSO=$redirect_login_to_sso" >> "$env_file"
 
-    chmod 400 "$install_dir/.env"
-    chown "$app:$app" "$install_dir/.env"
+    # Re-inject user-added variables preserved from previous config
+    if [[ -n "$user_vars" ]]; then
+        echo "" >> "$env_file"
+        echo "# User-added variables (preserved across upgrades)" >> "$env_file"
+        echo "$user_vars" >> "$env_file"
+    fi
+
+    chmod 400 "$env_file"
+    chown "$app:$app" "$env_file"
 
     # Update checksum to include the appended lines, so YunoHost
     # doesn't warn about "manually modified" file on next upgrade/restore
-    ynh_store_file_checksum "$install_dir/.env"
+    ynh_store_file_checksum "$env_file"
 }
 
 # Register Yamtrack as an OIDC client in Dex (if installed and SSO enabled)
