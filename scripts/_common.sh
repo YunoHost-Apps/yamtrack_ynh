@@ -24,23 +24,43 @@ yamtrack_setup_certs() {
 # Any other variable found in .env will be preserved across upgrades
 YAMTRACK_MANAGED_ENV_VARS='SECRET|DEBUG|ALLOWED_HOSTS|CSRF|URLS|DB_HOST|DB_PORT|DB_NAME|DB_USER|DB_PASSWORD|REDIS_URL|TZ|ACCOUNT_LOGOUT_REDIRECT_URL|REQUESTS_CA_BUNDLE|BASE_URL|REGISTRATION|SOCIAL_PROVIDERS|SOCIALACCOUNT_PROVIDERS|SOCIALACCOUNT_ONLY|REDIRECT_LOGIN_TO_SSO'
 
+# Uppercase names of config panel questions bound to .env. Kept as empty
+# placeholders in the .env template so that ynh_read_var_in_file never returns
+# YNH_NULL (which would make YunoHost refuse to display the config panel).
+# Values set by the user (via UI or manual edit) are preserved across upgrades.
+YAMTRACK_CONFIG_PANEL_ENV_VARS='TRAKT_API|TRAKT_API_SECRET|SIMKL_ID|SIMKL_SECRET|ANILIST_ID|ANILIST_SECRET|STEAM_API_KEY'
+
 # Write the .env config file and append OIDC + BASE_URL settings
 # This avoids issues with ynh_config_add sed substitution on JSON values
 yamtrack_setup_env() {
     local env_file="$install_dir/.env"
     local user_vars=""
+    declare -A config_panel_values=()
 
-    # Preserve any user-added env vars (e.g. TRAKT_API, SIMKL_ID, ANILIST_ID,
-    # STEAM_API_KEY) before the .env is regenerated from the template.
-    # Keep only lines that set a variable NOT managed by this package.
     if [[ -f "$env_file" ]]; then
+        # Preserve config panel values (they live as placeholders in the
+        # template; we re-inject them in-place after regeneration)
+        local upper val
+        for upper in ${YAMTRACK_CONFIG_PANEL_ENV_VARS//|/ }; do
+            val=$(ynh_read_var_in_file --file="$env_file" --key="$upper" 2>/dev/null || echo YNH_NULL)
+            if [[ "$val" != "YNH_NULL" ]]; then
+                config_panel_values[$upper]="$val"
+            fi
+        done
+
+        # Preserve any other user-added env vars (not managed, not config panel)
         user_vars=$(grep -E '^[[:space:]]*#?[[:space:]]*[A-Z_][A-Z0-9_]*=' "$env_file" \
-            | grep -vE "^[[:space:]]*#?[[:space:]]*(${YAMTRACK_MANAGED_ENV_VARS})=" \
+            | grep -vE "^[[:space:]]*#?[[:space:]]*(${YAMTRACK_MANAGED_ENV_VARS}|${YAMTRACK_CONFIG_PANEL_ENV_VARS})=" \
             || true)
     fi
 
     # Deploy the base .env template
     ynh_config_add --template=".env" --destination="$env_file"
+
+    # Restore preserved config panel values into the template placeholders
+    for upper in "${!config_panel_values[@]}"; do
+        ynh_write_var_in_file --file="$env_file" --key="$upper" --value="${config_panel_values[$upper]}"
+    done
 
     # Handle BASE_URL: empty if root path, otherwise the subpath
     local base_url=""

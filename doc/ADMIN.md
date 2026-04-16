@@ -29,11 +29,17 @@ cd /var/www/yamtrack/src
 sudo -u yamtrack /var/www/yamtrack/venv/bin/python manage.py changepassword <username>
 ```
 
-## Custom environment variables
+## Media import integrations
 
-Yamtrack supports optional environment variables to configure external integrations (Trakt, Simkl, AniList, Steam, etc.). See the [upstream documentation](https://github.com/FuzzyGrim/Yamtrack/wiki/Media-Import-Configuration) for the full list (e.g. `TRAKT_API`, `TRAKT_API_SECRET`, `SIMKL_ID`, `SIMKL_SECRET`, `ANILIST_ID`, `ANILIST_SECRET`, `STEAM_API_KEY`).
+Yamtrack can import media from external services (Trakt, Simkl, AniList, Steam). These require API credentials.
 
-To add custom variables, edit `/var/www/yamtrack/.env` as root:
+### Via the YunoHost UI (recommended)
+
+Open **YunoHost admin → Applications → Yamtrack → Media Import Integrations**. The panel lets you fill in the credentials for Trakt, Simkl, AniList and Steam, and restarts the services automatically.
+
+### Via the terminal
+
+Alternatively, edit `/var/www/yamtrack/.env` as root:
 
 ```bash
 sudo nano /var/www/yamtrack/.env
@@ -45,4 +51,6 @@ Append your variables at the end of the file, then restart the services:
 sudo systemctl restart yamtrack yamtrack-celery yamtrack-celery-beat
 ```
 
-These user-added variables are **preserved across upgrades**. Variables managed by the package (database, SSO, etc.) are always regenerated from the YunoHost settings and should not be edited manually.
+See the [upstream documentation](https://github.com/FuzzyGrim/Yamtrack/wiki/Media-Import-Configuration) for the full list of supported variables (e.g. `TRAKT_API`, `TRAKT_API_SECRET`, `SIMKL_ID`, `SIMKL_SECRET`, `ANILIST_ID`, `ANILIST_SECRET`, `STEAM_API_KEY`).
+
+User-added variables are **preserved across upgrades**. Variables managed by the package (database, SSO, etc.) are always regenerated from the YunoHost settings and should not be edited manually.

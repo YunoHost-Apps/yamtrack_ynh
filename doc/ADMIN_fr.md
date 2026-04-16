@@ -29,11 +29,17 @@ cd /var/www/yamtrack/src
 sudo -u yamtrack /var/www/yamtrack/venv/bin/python manage.py changepassword <nom_utilisateur>
 ```
 
-## Variables d'environnement personnalisées
+## Intégrations d'import de médias
 
-Yamtrack prend en charge des variables d'environnement optionnelles pour configurer les intégrations externes (Trakt, Simkl, AniList, Steam, etc.). Voir la [documentation upstream](https://github.com/FuzzyGrim/Yamtrack/wiki/Media-Import-Configuration) pour la liste complète (par ex. `TRAKT_API`, `TRAKT_API_SECRET`, `SIMKL_ID`, `SIMKL_SECRET`, `ANILIST_ID`, `ANILIST_SECRET`, `STEAM_API_KEY`).
+Yamtrack peut importer des médias depuis des services externes (Trakt, Simkl, AniList, Steam). Ces services nécessitent des identifiants API.
 
-Pour ajouter des variables personnalisées, éditez `/var/www/yamtrack/.env` en tant que root :
+### Via l'interface YunoHost (recommandé)
+
+Ouvrez **Admin YunoHost → Applications → Yamtrack → Intégrations d'import de médias**. Le panneau permet de renseigner les identifiants Trakt, Simkl, AniList et Steam, et redémarre les services automatiquement.
+
+### Via le terminal
+
+Alternativement, éditez `/var/www/yamtrack/.env` en tant que root :
 
 ```bash
 sudo nano /var/www/yamtrack/.env
@@ -45,4 +51,6 @@ Ajoutez vos variables à la fin du fichier, puis redémarrez les services :
 sudo systemctl restart yamtrack yamtrack-celery yamtrack-celery-beat
 ```
 
-Ces variables personnalisées sont **conservées lors des mises à jour**. Les variables gérées par le paquet (base de données, SSO, etc.) sont toujours régénérées à partir des paramètres YunoHost et ne doivent pas être modifiées manuellement.
+Voir la [documentation upstream](https://github.com/FuzzyGrim/Yamtrack/wiki/Media-Import-Configuration) pour la liste complète des variables supportées (par ex. `TRAKT_API`, `TRAKT_API_SECRET`, `SIMKL_ID`, `SIMKL_SECRET`, `ANILIST_ID`, `ANILIST_SECRET`, `STEAM_API_KEY`).
+
+Les variables ajoutées par l'utilisateur sont **conservées lors des mises à jour**. Les variables gérées par le paquet (base de données, SSO, etc.) sont toujours régénérées à partir des paramètres YunoHost et ne doivent pas être modifiées manuellement.
