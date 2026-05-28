@@ -20,6 +20,32 @@ yamtrack_setup_certs() {
     chown -R "$app:$app" "$install_dir/certs"
 }
 
+# Install Python dependencies via uv.
+# On Bookworm (Python 3.11) uv downloads CPython 3.12 into .python/.
+# On Trixie+ the cached runtime is reused; no internet download after first install.
+yamtrack_install_python_deps() {
+    # Bootstrap venv with system Python so we can install uv without touching
+    # the system pip (no --break-system-packages needed).
+    python3 -m venv --clear "$install_dir/venv"
+    mkdir -p "$install_dir/.python"
+    chown -R "$app:www-data" "$install_dir"
+
+    ynh_exec_as_app "$install_dir/venv/bin/pip3" install uv -q
+
+    # uv detects the Python 3.11 venv, downloads CPython 3.12 if needed, recreates
+    # the venv and installs all locked deps. The uv binary keeps running in memory
+    # even after the venv directory is replaced, so this is safe.
+    pushd "$install_dir"
+        ynh_hide_warnings ynh_exec_as_app env \
+            UV_PYTHON="3.12" \
+            UV_PROJECT_ENVIRONMENT="$install_dir/venv" \
+            UV_PYTHON_INSTALL_DIR="$install_dir/.python" \
+            "$install_dir/venv/bin/uv" sync --locked --no-dev
+    popd
+
+    chown -R "$app:www-data" "$install_dir"
+}
+
 # Variables managed by this package (regenerated on every upgrade)
 # Any other variable found in .env will be preserved across upgrades
 YAMTRACK_MANAGED_ENV_VARS='SECRET|DEBUG|ALLOWED_HOSTS|CSRF|URLS|DB_HOST|DB_PORT|DB_NAME|DB_USER|DB_PASSWORD|REDIS_URL|TZ|ACCOUNT_LOGOUT_REDIRECT_URL|REQUESTS_CA_BUNDLE|BASE_URL|REGISTRATION|SOCIAL_PROVIDERS|SOCIALACCOUNT_PROVIDERS|SOCIALACCOUNT_ONLY|REDIRECT_LOGIN_TO_SSO'
