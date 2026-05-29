@@ -35,7 +35,7 @@ ynh_script_progression "Reinstalling Python dependencies..."
 ynh_safe_rm "$install_dir/venv"
 
 if [[ -f "$install_dir/uv.lock" ]]; then
-    yamtrack_install_python_deps
+    yamtrack_setup_venv
 else
     # Fallback for backups from yamtrack < 0.25.3 (requirements.txt era)
     pushd "$install_dir"

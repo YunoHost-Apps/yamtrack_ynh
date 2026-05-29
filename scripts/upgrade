@@ -40,7 +40,7 @@ chown -R "$app:www-data" "$install_dir"
 #=================================================
 ynh_script_progression "Installing Python dependencies..."
 
-yamtrack_install_python_deps
+yamtrack_setup_venv
 
 #=================================================
 # CONFIGURE OIDC VIA DEX (IF AVAILABLE)

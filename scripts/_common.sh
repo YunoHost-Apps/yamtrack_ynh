@@ -23,7 +23,7 @@ yamtrack_setup_certs() {
 # Install Python dependencies via uv.
 # On Bookworm (Python 3.11) uv downloads CPython 3.12 into .python/.
 # On Trixie+ the cached runtime is reused; no internet download after first install.
-yamtrack_install_python_deps() {
+yamtrack_setup_venv() {
     # Bootstrap venv with system Python so we can install uv without touching
     # the system pip (no --break-system-packages needed).
     python3 -m venv --clear "$install_dir/venv"
