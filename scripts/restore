@@ -32,13 +32,19 @@ chown -R "$app:$app" "$data_dir"
 #=================================================
 ynh_script_progression "Reinstalling Python dependencies..."
 
-pushd "$install_dir"
-    ynh_safe_rm "$install_dir/venv"
-    python3 -m venv venv
-    chown -R "$app:www-data" "$install_dir"
-    ynh_hide_warnings ynh_exec_as_app "$install_dir/venv/bin/pip3" install --upgrade pip setuptools wheel
-    ynh_hide_warnings ynh_exec_as_app "$install_dir/venv/bin/pip3" install -r "$install_dir/requirements.txt"
-popd
+ynh_safe_rm "$install_dir/venv"
+
+if [[ -f "$install_dir/uv.lock" ]]; then
+    yamtrack_setup_venv
+else
+    # Fallback for backups from yamtrack < 0.25.3 (requirements.txt era)
+    pushd "$install_dir"
+        python3 -m venv venv
+        chown -R "$app:www-data" "$install_dir"
+        ynh_hide_warnings ynh_exec_as_app "$install_dir/venv/bin/pip3" install --upgrade pip setuptools wheel
+        ynh_hide_warnings ynh_exec_as_app "$install_dir/venv/bin/pip3" install -r "$install_dir/requirements.txt"
+    popd
+fi
 
 #=================================================
 # RE-REGISTER OIDC CLIENT IN DEX (IF AVAILABLE)
