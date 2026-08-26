@@ -11,11 +11,13 @@ timezone=$(timedatectl show --value --property=Timezone)
 yamtrack_setup_certs() {
     mkdir -p "$install_dir/certs"
     cp /etc/ssl/certs/ca-certificates.crt "$install_dir/certs/ca-bundle.crt"
-    # Extract the CA cert from the domain's TLS chain (handles self-signed setups
-    # where the ca.pem symlink may not match the actual issuing CA)
+    # Extract every CA cert from the domain's TLS chain, not just the first
+    # intermediate: some issuers (e.g. Let's Encrypt's short-lived chains) now
+    # serve a leaf + intermediate + cross-signed root, and skipping the extra
+    # cert breaks verification with "unable to get issuer certificate".
     openssl s_client -connect "$domain:443" -servername "$domain" -showcerts \
         < /dev/null 2>/dev/null \
-        | awk '/BEGIN CERTIFICATE/{n++} n==2' \
+        | awk '/BEGIN CERTIFICATE/{n++} n>=2' \
         >> "$install_dir/certs/ca-bundle.crt" 2>/dev/null || true
     chown -R "$app:$app" "$install_dir/certs"
 }
